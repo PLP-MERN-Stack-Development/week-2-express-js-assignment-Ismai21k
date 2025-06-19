@@ -1,6 +1,4 @@
- 
 
-readme_content = """
 # 📦 Simple In-Memory Product API
 
 A RESTful API built with Express.js for managing products using in-memory storage. It includes custom middleware, validation, Swagger documentation, search, pagination, error handling, and statistics.
