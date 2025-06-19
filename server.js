@@ -4,43 +4,33 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { v4: uuidv4 } = require('uuid');
+const logger = require('./middleware/logger');
+const validateProduct = require('./middleware/validateProduct');
+const {AppError,notFoundError,UnauthorizedError} = require('./errors/customErrors');
+const wrongRoutes = require('./middleware/routeError');
+const router = require('./routes/userRoutes');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./swagger.yaml');
+
+
+
+// Load environment variables from .env file
+require('dotenv').config();
 
 // Initialize Express app
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 // Middleware setup
 app.use(bodyParser.json());
 
-// Sample in-memory products database
-let products = [
-  {
-    id: '1',
-    name: 'Laptop',
-    description: 'High-performance laptop with 16GB RAM',
-    price: 1200,
-    category: 'electronics',
-    inStock: true
-  },
-  {
-    id: '2',
-    name: 'Smartphone',
-    description: 'Latest model with 128GB storage',
-    price: 800,
-    category: 'electronics',
-    inStock: true
-  },
-  {
-    id: '3',
-    name: 'Coffee Maker',
-    description: 'Programmable coffee maker with timer',
-    price: 50,
-    category: 'kitchen',
-    inStock: false
-  }
-];
-
+app.use(logger)
+// app.use(apiKey)
 // Root route
+
+
+app.use('/', router)
 app.get('/', (req, res) => {
   res.send('Welcome to the Product API! Go to /api/products to see all products.');
 });
@@ -53,14 +43,17 @@ app.get('/', (req, res) => {
 // DELETE /api/products/:id - Delete a product
 
 // Example route implementation for GET /api/products
-app.get('/api/products', (req, res) => {
-  res.json(products);
-});
+
 
 // TODO: Implement custom middleware for:
 // - Request logging
 // - Authentication
 // - Error handling
+app.get('/test',(req,res, next) =>{
+  next(new notFoundError())
+})
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+app.use(wrongRoutes)
 
 // Start the server
 app.listen(PORT, () => {

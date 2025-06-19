@@ -1,0 +1,180 @@
+openapi: 3.0.0
+info:
+  title: Simple In-Memory Store API
+  version: 1.0.0
+  description: A simple Express API for managing products with in-memory storage
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+
+  /api/products:
+    get:
+      summary: Retrieve all products
+      responses:
+        '200':
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Product created
+
+  /api/products/{id}:
+    get:
+      summary: Get a product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+    put:
+      summary: Update a product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Product updated
+    delete:
+      summary: Delete a product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Product deleted
+
+  /api/search:
+    get:
+      summary: Filter products by category
+      parameters:
+        - name: category
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Filtered products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /api/paginate:
+    get:
+      summary: Paginate product list
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Paginated products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /api/searchbyname:
+    get:
+      summary: Search products by name
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Matching products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+  /api/productstats:
+    get:
+      summary: Get product statistics by category
+      responses:
+        '200':
+          description: Stats by category
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  electronics: 5
+                  clothing: 2
+                  furniture: 3
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "2"
+        name:
+          type: string
+          example: "Smartphone"
+        description:
+          type: string
+          example: "Latest model with 128GB storage"
+        price:
+          type: number
+          example: 800
+        category:
+          type: string
+          example: "electronics"
+        inStock:
+          type: boolean
+          example: true
